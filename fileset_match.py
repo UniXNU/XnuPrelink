@@ -197,7 +197,9 @@ class Matcher:
                 native = self.pairs.get(orig)
                 if native is not None and native not in natives:
                     bad.append(orig)
-        for orig in bad:
+        for orig in sorted(set(bad)):
+            if orig not in self.pairs:
+                continue
             self.conflicts.append({'kind': 'diversity', 'orig': f'{orig:#x}',
                                    'native': f'{self.pairs[orig]:#x}', 'via': self.how[orig]})
             del self.reverse[self.pairs.pop(orig)]
