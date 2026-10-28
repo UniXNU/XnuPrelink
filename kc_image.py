@@ -160,32 +160,34 @@ def signed(value, bits):
     return value - (1 << bits) if value & (1 << (bits - 1)) else value
 
 
-def scan(code, pc):
+def scan(code, pc, with_origins=False):
     """Branch targets, resolved adrp-based addresses and a relocation-masked shape of one function."""
     calls, refs, shape, pages = [], [], [], {}
     for offset in range(0, len(code) - 3, 4):
         word, = struct.unpack_from('<I', code, offset)
         here = pc + offset
         if word & 0x7c000000 == 0x14000000:
-            calls.append((here, here + signed(word & 0x3ffffff, 26) * 4, bool(word >> 31)))
-            shape.append(word & 0xfc000000)
-            if word >> 31:
-                for register in range(19):
-                    pages.pop(register, None)
+            target = here + signed(word & 0x3ffffff, 26) * 4
+            calls.append((here, target, bool(word >> 31)))
+            shape.append(word if pc <= target < pc + len(code) else word & 0xfc000000)
+            pages.clear()
             continue
         if word & 0x9f000000 == 0x90000000:
             immediate = signed(((word >> 5) & 0x7ffff) << 2 | ((word >> 29) & 3), 21)
-            pages[word & 31] = (here & ~4095) + (immediate << 12)
+            pages[word & 31] = ((here & ~4095) + (immediate << 12), here)
             shape.append(word & 0x9f00001f)
             continue
         if word & 0x9f000000 == 0x10000000:
-            refs.append((here, here + signed(((word >> 5) & 0x7ffff) << 2 | ((word >> 29) & 3), 21), 'adr'))
+            ref = (here, here + signed(((word >> 5) & 0x7ffff) << 2 | ((word >> 29) & 3), 21), 'adr')
+            refs.append(ref + (None, 0) if with_origins else ref)
             shape.append(word & 0x9f00001f)
+            pages.pop(word & 31, None)
             continue
         base = (word >> 5) & 31
         if word & 0xff800000 == 0x91000000 and base in pages:
             shift = 12 if word & 0x400000 else 0
-            refs.append((here, pages[base] + (((word >> 10) & 0xfff) << shift), 'add'))
+            ref = (here, pages[base][0] + (((word >> 10) & 0xfff) << shift), 'add')
+            refs.append(ref + (pages[base][1], shift) if with_origins else ref)
             shape.append(word & 0xffc003ff)
             pages.pop(word & 31, None)
             continue
@@ -193,8 +195,17 @@ def scan(code, pc):
             size = word >> 30
             if word & 0x04800000 == 0x04800000:
                 size = 4
-            refs.append((here, pages[base] + (((word >> 10) & 0xfff) << size), 'ldst'))
+            ref = (here, pages[base][0] + (((word >> 10) & 0xfff) << size), 'ldst')
+            refs.append(ref + (pages[base][1], size) if with_origins else ref)
             shape.append(word & 0xffc003ff)
+            # A load can replace the register that held the page. Dropping a
+            # store's source register is conservative and also handles SIMD
+            # encodings without pretending to perform full register analysis.
+            pages.pop(word & 31, None)
             continue
         shape.append(word)
+        # Never carry a guessed register value through a clobber or control
+        # flow merge. Only the recognized straight-line operations above keep
+        # page provenance; an unknown instruction terminates that evidence.
+        pages.clear()
     return calls, refs, shape

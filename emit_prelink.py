@@ -315,16 +315,62 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     parser.add_argument('--early-security-init', action='append', default=[], metavar='BUNDLE=ORIGINAL_VA',
                         help='Explicit original void(void) policy initializer, called before lockdown; requires source ABI')
+    parser.add_argument('--fileset-map', type=Path, help='existing exact-input pairing for an MH_FILESET cache')
+    parser.add_argument('--fileset-reference', type=Path, help='symbol-bearing comparison kernel for fileset matching')
+    parser.add_argument('--allow-missing', action='store_true',
+                        help='MH_FILESET only: emit an experimental image with incomplete mappings')
     args = parser.parse_args()
+    if args.output.exists():
+        raise SystemExit('Refuse to overwrite an existing candidate')
     initializers = {}
     for request in args.early_security_init:
         identifier, separator, address = request.partition('=')
         if not separator or not identifier or identifier in initializers:
             parser.error('Use one BUNDLE=ORIGINAL_VA initializer per module')
         initializers[identifier] = int(address, 0)
-    image, report = emit(args.kernel.read_bytes(), args.prelinked.read_bytes(), args.root, args.slide, initializers)
-    if args.output.exists():
-        raise SystemExit('Refuse to overwrite an existing candidate')
+    native_data, original_data = args.kernel.read_bytes(), args.prelinked.read_bytes()
+    if len(original_data) >= 16 and struct.unpack_from('<I', original_data, 12)[0] == 12:
+        from fileset_emit import atomic_write, emit_images, validate_map, write_candidate
+        from fileset_match import match_images, MATCHER_VERSION, matcher_signature
+        reference_data = args.fileset_reference.read_bytes() if args.fileset_reference else None
+        reference_hash = hashlib.sha256(reference_data).hexdigest() if reference_data is not None else None
+        map_path = args.fileset_map or args.output.with_suffix('.map.json')
+        if args.fileset_map:
+            pairing = json.loads(map_path.read_text())
+            validate_map(original_data, native_data, pairing)
+            if pairing.get('matcher_version') != MATCHER_VERSION or pairing.get('matcher_signature') != matcher_signature():
+                parser.error('fileset map predates the current matching checks; regenerate it')
+            if reference_data is not None and pairing.get('reference_sha256') != reference_hash:
+                parser.error('fileset map does not match the supplied reference kernel')
+        else:
+            pairing = None
+            if map_path.is_file():
+                cached = json.loads(map_path.read_text())
+                try:
+                    validate_map(original_data, native_data, cached)
+                    if (cached.get('matcher_version') == MATCHER_VERSION and cached.get('matcher_signature') == matcher_signature()
+                            and cached.get('reference_sha256') == reference_hash):
+                        pairing = cached
+                except ValueError:
+                    pass
+            if pairing is None:
+                pairing = match_images(original_data, native_data, reference_data=reference_data)
+                atomic_write(map_path, (json.dumps(pairing, indent=2) + '\n').encode())
+        # An experimental image binds every unmatched function start to the
+        # panic stub, so an unknown call reports its site instead of jumping to
+        # a stale address. Data references still have no such fallback.
+        stub_symbol = '_unixnu_fileset_unmapped' if args.allow_missing else None
+        image, report = emit_images(original_data, native_data, pairing, args.root,
+                                    stub_symbol=stub_symbol, early_security_init=initializers or None)
+        report.update(kernelcache=str(args.prelinked.resolve()), native=str(args.kernel.resolve()),
+                      map=str(map_path.resolve()))
+        # Filesets use the native link address so early XNU can find their root.
+        # The old static-prelink --slide option is not applied to this format.
+        write_candidate(image, report, args.output, args.output.with_suffix('.json'), args.allow_missing)
+        return
+    if args.fileset_map or args.fileset_reference or args.allow_missing:
+        parser.error('--fileset-map, --fileset-reference and --allow-missing require an MH_FILESET input')
+    image, report = emit(native_data, original_data, args.root, args.slide, initializers)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_bytes(image)
     args.output.with_suffix('.json').write_text(json.dumps(report, indent=2) + '\n')
