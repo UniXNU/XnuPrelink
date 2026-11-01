@@ -90,6 +90,24 @@ class Image:
             result.setdefault(value, []).append(self.data[stroff + strx:end].decode())
         return result
 
+    def absolute_symbols(self):
+        """Named N_ABS values; unlike section symbols these do not move with code."""
+        found = self.command(LC_SYMTAB)
+        result = {}
+        if not found:
+            return result
+        symoff, count, stroff, _ = struct.unpack_from('<4I', self.data, found[0] + 8)
+        for index in range(count):
+            strx, kind, _, _, value = struct.unpack_from('<IBBHQ', self.data, symoff + 16 * index)
+            if kind & 0xe0 or kind & 0x0e != 0x02:
+                continue
+            end = self.data.index(b'\0', stroff + strx)
+            name = self.data[stroff + strx:end].decode()
+            if name in result and result[name] != value:
+                raise ValueError(f'Conflicting absolute symbol {name}')
+            result[name] = value
+        return result
+
     def function_starts(self):
         found = self.command(LC_FUNCTION_STARTS)
         if not found:
