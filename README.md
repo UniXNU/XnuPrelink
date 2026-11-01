@@ -74,3 +74,8 @@ the output as `native-only`; payload arguments and loader support are separate.
 The lower-level `fileset_emit.py` accepts `--map FILE`, `--output FILE`,
 `--report FILE` and repeated `--root BUNDLE_ID` arguments. Run host regressions
 with `python3 -m unittest discover -p 'test_*.py'`.
+
+The 24A446 fixture also pins `IOCircularDataQueueCopyLatest` and `get_aiotask`.
+A complete rebuild of the native adapter archives changed the RELEASE reference
+layout and lost these two order-based matches. Their original function digests,
+source consumers and accessor/copy semantics are recorded in the fixture.

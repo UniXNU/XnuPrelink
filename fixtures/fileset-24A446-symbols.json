@@ -990,6 +990,20 @@
       "original_sha256": "588972dc20d14f7f6a39608807f7559fa46881b00926f9552a1b15b5719f3997",
       "native_symbol": "_kprintf",
       "evidence": "Corecrypto startup logging import at 0xfffffe00084ac948, reached by BL at 0xfffffe000ac7245c with the corecrypto_kext_start format string. Retained image resolves the same import to _kprintf; source interface is pexpert/arm/pe_kprintf.c kprintf(const char *, ...). Recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4f4d64",
+      "original_size": 68,
+      "original_sha256": "733c3d1deeb6a84f14f002c6bc55029f14eadbd3c09935b3cf0bde76e4a06179",
+      "native_symbol": "_IOCircularDataQueueCopyLatest",
+      "evidence": "Same 68-byte instruction shape as the rebuilt LTO RELEASE symbol: null queue returns kIOReturnBadArgument (0xe00002c2); otherwise takes the address of the stack copy of data and calls _getLatestInQueueMemInternal with w3=1 (copy). Source IOCircularDataQueueImplementation.h copyLatestInQueueMem/IOCircularDataQueueCopyLatest; consumer IOFastPathHIDLEDService::timerCallback in IOHIDFamily calls this API and logs its name. Previously reference-order; rebuilding the adapter archives changed reference layout and dropped that inference."
+    },
+    {
+      "original": "0xfffffe000b221130",
+      "original_size": 16,
+      "original_sha256": "63f7baef323892990578a57f6f1fa48d54de1f990c7b9d95c9036bbd3fa539c5",
+      "native_symbol": "_get_aiotask",
+      "evidence": "BTI; MRS TPIDR_EL1; LDR x0,[x8,#0x708]; RET. The RELEASE reference _get_aiotask has the same thread-relative accessor with its source-layout offset 0x6b8. Source bsd/kern/kern_aio.c returns current_uthread()->uu_aio_task; IOMediaBSDClient.cpp DKR_GET_TASK calls get_aiotask then falls back to current_task. Previous verified mapping and retained IOStorageFamily import agree on this identity. Resolve the native accessor by symbol; do not copy the original thread offset."
     }
   ],
   "data": [
