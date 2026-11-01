@@ -3,7 +3,7 @@ import struct
 from types import SimpleNamespace
 import unittest
 
-from fileset_layout import split_references, encode_uleb, relocate_native, Layout
+from fileset_layout import split_references, encode_uleb, relocate_native, relocate_original_stubs, Layout
 
 
 def records(groups):
@@ -26,6 +26,42 @@ def image_fixture(blob):
 
 
 class SplitSegmentTests(unittest.TestCase):
+    def original_stub(self, target=0x8000, moved=0x20000, branch_target=None):
+        stub = 0x1000
+        actual = target if branch_target is None else branch_target
+        blob = struct.pack('<2I', 0xd503245f, 0x14000000 | (((actual-stub-4)//4) & 0x3ffffff))
+        native = SimpleNamespace(symbols=lambda: {stub: ['_constructor']},
+                                 absolute_symbols=lambda: {'_constructor.original': target,
+                                                           '_metaclass': 0x9000},
+                                 read=lambda a, n: blob)
+        return SimpleNamespace(native=native, cache=SimpleNamespace(base=0),
+                               retained_code=[(0x8000, 0x9000, 'kept.kext')],
+                               translate=lambda a: moved + a - stub)
+
+    def test_absolute_original_branch_keeps_target_when_native_text_moves(self):
+        from kc_image import signed
+        for moved in (0x4000, 0x20000):
+            output = bytearray(0x21000)
+            records = relocate_original_stubs(output, self.original_stub(moved=moved))
+            word, = struct.unpack_from('<I', output, moved + 4)
+            self.assertEqual(moved + 4 + signed(word & 0x3ffffff, 26) * 4, 0x8000)
+            self.assertEqual(records, [dict(symbol='_constructor', source=hex(moved+4),
+                                            target='0x8000', owner='kept.kext')])
+
+    def test_original_branch_rejects_stale_compensation_or_omitted_component(self):
+        with self.assertRaisesRegex(ValueError, 'not retained executable'):
+            relocate_original_stubs(bytearray(0x21000), self.original_stub(target=0x7000))
+        layout = self.original_stub()
+        layout.retained_code = []
+        with self.assertRaisesRegex(ValueError, 'not retained executable'):
+            relocate_original_stubs(bytearray(0x21000), layout)
+
+    def test_original_branch_checks_declared_target_and_branch_range(self):
+        with self.assertRaisesRegex(ValueError, 'disagrees'):
+            relocate_original_stubs(bytearray(0x21000), self.original_stub(branch_target=0x8004))
+        with self.assertRaisesRegex(ValueError, 'out of range'):
+            relocate_original_stubs(bytearray(), self.original_stub(moved=0x9000000))
+
     def test_offsets_accumulate_per_target_but_reset_per_kind(self):
         blob = records([(1, 2, [(8, [(5, [4, 12]), (6, [8, 12])]),
                                (16, [(5, [32])])])])

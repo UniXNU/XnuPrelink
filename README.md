@@ -23,6 +23,14 @@ data precede their kext ranges as required by XNU's `arm_vm_init`.
 `fileset_segmented.py` applies native split-segment v2 records, rebuilds root
 fixups and function starts, and recomputes corecrypto's HMAC over relocated
 code. Segment collisions and unsupported relocation kinds stop emission.
+Adapters that call retained kext code use a native `BTI c; B` stub and an
+`N_ABS` symbol named `<stub>.original` at the fixed collection target. The
+linker emits no split-segment record for this branch. The emitter therefore
+recomputes its displacement after native placement, checks the declared target
+against the linked instruction and retained executable ranges, and records each
+binding in `native_original_branches`. Builders must not subtract a cached
+native-text slide. Stale targets, missing stubs and out-of-range branches stop
+emission. Absolute data pointers in GOT entries retain their collection values.
 The native input executable is unchanged.
 
 Maps carry a matcher version as well as input hashes. The integrated CLI
@@ -30,6 +38,17 @@ regenerates outdated caches. Reviewed symbol anchors in `fixtures/` include
 function hashes and identification evidence. Other matches use code, data
 operands and identified vtables. A `.cold` error path is not substituted for
 its parent function. Link order alone does not bind ambiguous functions.
+The 24A446 fixture also preserves 23 imported identities from the retained
+RELEASE-LTO pairing and its matching boot image, plus corecrypto's `kprintf`
+import. The fixture records those inputs and pins each original function's
+bytes; native addresses are resolved again by symbol after every build.
+The fixture also identifies 13 previously missing vnode operation descriptors by
+`vdesc_name`, four metaclass pointer slots by their chained targets, and the
+`gIODTPHandleKey` and `audio_active` globals by their source consumers. Unbound
+vnode descriptors can make APFS registration read a zone field as an operation
+index in `vfs_fsadd`; they must resolve to the native descriptors initialized by
+VFS, not preserve old collection data addresses.
+
 The comparison recognizes complete compiler-inserted PAC failure checks and
 preserves branch geometry when comparing bodies. Native code keeps those checks.
 Both emission entry points reject maps produced by outdated matching code.
@@ -55,3 +74,8 @@ the output as `native-only`; payload arguments and loader support are separate.
 The lower-level `fileset_emit.py` accepts `--map FILE`, `--output FILE`,
 `--report FILE` and repeated `--root BUNDLE_ID` arguments. Run host regressions
 with `python3 -m unittest discover -p 'test_*.py'`.
+
+The 24A446 fixture also pins `IOCircularDataQueueCopyLatest` and `get_aiotask`.
+A complete rebuild of the native adapter archives changed the RELEASE reference
+layout and lost these two order-based matches. Their original function digests,
+source consumers and accessor/copy semantics are recorded in the fixture.

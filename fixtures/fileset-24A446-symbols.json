@@ -822,6 +822,188 @@
       "original_sha256": "674e883a6e9fda056c87d90fb525ca7b782299f82ddcb2275d0d5a605e52bf82",
       "native_symbol": "__ZN10IOReporter12updateReportEP19IOReportChannelListjPvS2_",
       "evidence": "Member: takes _reporterLock (+0x80) with interrupts disabled, stores the interrupt state at +0x78, sets _reporterIsLocked (+0x48), calls the virtual handleUpdateReport, clears the flag and unlocks. Source: IOReporter.cpp updateReport (lockReporter/handleUpdateReport/unlockReporter inlined)."
+    },
+    {
+      "original": "0xfffffe000b4c8914",
+      "original_size": 20,
+      "original_sha256": "b819b50321598c5226a8e478e1739c4d8459ede75902e2efd490fadf8de2cdf7",
+      "native_symbol": "__ZN5IOCPU11setPropertyEPK8OSSymbolP8OSObject",
+      "evidence": "Original and native __ZTV5IOCPU have this method at slot 0xc8 with matching authenticated-pointer key, address diversity and discriminator 17784. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4c8900",
+      "original_size": 20,
+      "original_sha256": "be7d2eae4436664bfb86f084e059835f106e9aba9ecf4bc9c2222598e279bfeb",
+      "native_symbol": "__ZNK5IOCPU11getPropertyEPK8OSSymbol",
+      "evidence": "Original and native __ZTV5IOCPU have this method at slot 0x118 with matching authenticated-pointer key, address diversity and discriminator 33515. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4c8844",
+      "original_size": 188,
+      "original_sha256": "49d1e76b881dd6b4adb868582b7836f8d691c36aff50461032833a3169db2e2c",
+      "native_symbol": "__ZNK5IOCPU19serializePropertiesEP11OSSerialize",
+      "evidence": "Original and native __ZTV5IOCPU have this method at slot 0x168 with matching authenticated-pointer key, address diversity and discriminator 215. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4db6e0",
+      "original_size": 280,
+      "original_sha256": "7a16dad9a64c935d5c7bdaf0535076b3ad4d81b273bee2013e216d2ef0ae6351",
+      "native_symbol": "__ZN21IOInterruptController15enableInterruptEP9IOServicei",
+      "evidence": "Original and native __ZTV21IOInterruptController have this method at slot 0x568 with matching authenticated-pointer key, address diversity and discriminator 60910. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b47008c",
+      "original_size": 196,
+      "original_sha256": "04078114e78ab0422f34c3a7da43f5555fa9e6c52672df371b99a3cc2abc9507",
+      "native_symbol": "__ZN9IOService15publishResourceEPK8OSSymbolP8OSObject",
+      "evidence": "Substitutes kOSBooleanTrue for a null object, calls gIOResources->setProperty using PAC discriminator 17784, and registers resources outside the notification thread; matches iokit/Kernel/IOService.cpp publishResource. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000aebbb08",
+      "original_size": 704,
+      "original_sha256": "b7486ff970c368fc5c483f72189eee9780b3b39c6b1560eddcb8ffa2faa04a02",
+      "native_symbol": "_copyinstr",
+      "evidence": "Clears the copied-length output, returns ENAMETOOLONG (63) for zero size, validates user/kernel ranges, calls the guarded string-copy routines, and writes the copied length unless EFAULT (14). Matches osfmk/arm64/copyio.c copyinstr. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000ad8273c",
+      "original_size": 32,
+      "original_sha256": "9a93d02a35e12565a488fa7ef3b04a2dfb1649e744cc6763fdbfc8cd4841b30c",
+      "native_symbol": "_task_set_cs_auxiliary_info",
+      "evidence": "Returns KERN_INVALID_ARGUMENT (4) for a null task, otherwise stores x1 into task auxiliary code-signing info at original offset 0x6a0 and returns 0. Matches osfmk/kern/task.c task_set_cs_auxiliary_info; native layout is resolved by symbol. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b40e7f4",
+      "original_size": 344,
+      "original_sha256": "6c338c0e6ec6ca1f7c7da56af1c4650a016659d9f42458f7e1460d449f0b46e4",
+      "native_symbol": "__ZNK5OSSet9serializeEP11OSSerialize",
+      "evidence": "Original and native __ZTV5OSSet have this method at slot 0x40 with matching authenticated-pointer key, address diversity and discriminator 35241. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b40e73c",
+      "original_size": 168,
+      "original_sha256": "1767c497632316e906616d193f97cab878a517fe5fedd1a7d7865fd57415ef24",
+      "native_symbol": "__ZNK5OSSet9isEqualToEPK15OSMetaClassBase",
+      "evidence": "Original and native __ZTV5OSSet have this method at slot 0x50 with matching authenticated-pointer key, address diversity and discriminator 64628. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b40e540",
+      "original_size": 80,
+      "original_sha256": "72d99ef293d2bd0380ef3f094320fda6ee6b886bbfdb4c835c9791b7c0c5db64",
+      "native_symbol": "__ZN5OSSet15flushCollectionEv",
+      "evidence": "Original and native __ZTV5OSSet have this method at slot 0xc8 with matching authenticated-pointer key, address diversity and discriminator 10099. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b3d7820",
+      "original_size": 168,
+      "original_sha256": "7e0acfe064142baf589d8ef35a0169525cc181b08f6857a2c304b90838b630fa",
+      "native_symbol": "__ZNK7OSArray9isEqualToEPK15OSMetaClassBase",
+      "evidence": "Original and native __ZTV7OSArray have this method at slot 0x50 with matching authenticated-pointer key, address diversity and discriminator 64628. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b3d679c",
+      "original_size": 404,
+      "original_sha256": "70ac105184a98fa162bb023444f8686ad16eef1cc0086cd70c8b1c36f1ae7359",
+      "native_symbol": "__ZN7OSArray12removeObjectEj",
+      "evidence": "Original and native __ZTV7OSArray have this method at slot 0x118 with matching authenticated-pointer key, address diversity and discriminator 16459. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b49f4a4",
+      "original_size": 84,
+      "original_sha256": "478722a855256439c3d61eb1b5784635607021f121b0cba5f4a5ff958e3a25fb",
+      "native_symbol": "__ZN13IOCommandGate4freeEv",
+      "evidence": "Original and native __ZTV13IOCommandGate have this method at slot 0x80 with matching authenticated-pointer key, address diversity and discriminator 60869. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b49f1f4",
+      "original_size": 204,
+      "original_sha256": "d878336857264b23ebaf3df0c03e539a8cf3e960a07994d9e0d2cfebb8d18022",
+      "native_symbol": "__ZN13IOCommandGate6enableEv",
+      "evidence": "Original and native __ZTV13IOCommandGate have this method at slot 0xc0 with matching authenticated-pointer key, address diversity and discriminator 39702. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4a441c",
+      "original_size": 88,
+      "original_sha256": "cf4502445c963b91d2ed55403f1fad9594fb67d4bf7c34ed84371970bc38cc52",
+      "native_symbol": "__ZN18IOTimerEventSource12checkForWorkEv",
+      "evidence": "Original and native __ZTV18IOTimerEventSource have this method at slot 0x90 with matching authenticated-pointer key, address diversity and discriminator 9038. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4a437c",
+      "original_size": 160,
+      "original_sha256": "b5bd5cc51dc45c4b6f6df0b6184674a88a225eacfd9e33591b640e9b80b22f3c",
+      "native_symbol": "__ZN18IOTimerEventSource11setWorkLoopEP10IOWorkLoop",
+      "evidence": "Original and native __ZTV18IOTimerEventSource have this method at slot 0x98 with matching authenticated-pointer key, address diversity and discriminator 45898. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4a3954",
+      "original_size": 116,
+      "original_sha256": "452624f62e4a6de1da4d896d9f06bac69867c00bec9930f94cec16525df33e14",
+      "native_symbol": "__ZN18IOTimerEventSource10setTimeoutEjyy",
+      "evidence": "Original and native __ZTV18IOTimerEventSource have this method at slot 0x158 with matching authenticated-pointer key, address diversity and discriminator 41656. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4bfb14",
+      "original_size": 84,
+      "original_sha256": "a867ac9e5d13c3e46118985fd97e6468eb4b4f25c192a9c7e6df6e709d6f8bb2",
+      "native_symbol": "__ZN21IOSubMemoryDescriptor4freeEv",
+      "evidence": "Original and native __ZTV21IOSubMemoryDescriptor have this method at slot 0x80 with matching authenticated-pointer key, address diversity and discriminator 60869. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4bf9c4",
+      "original_size": 128,
+      "original_sha256": "8be7539e78a18c917315acc2b5bf1f2d5d782b4e2176db1a681b212fd5c5841c",
+      "native_symbol": "__ZN21IOSubMemoryDescriptor16getPreparationIDEv",
+      "evidence": "Original and native __ZTV21IOSubMemoryDescriptor have this method at slot 0xb0 with matching authenticated-pointer key, address diversity and discriminator 40511. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4bf8fc",
+      "original_size": 104,
+      "original_sha256": "e1145b90652116cea9fc82b560440790c586468582b963ea89b5a5dd6997f1e3",
+      "native_symbol": "__ZN21IOSubMemoryDescriptor8redirectEP4taskb",
+      "evidence": "Original and native __ZTV21IOSubMemoryDescriptor have this method at slot 0x108 with matching authenticated-pointer key, address diversity and discriminator 65334. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4f392c",
+      "original_size": 368,
+      "original_sha256": "a5035a661dd3cc63f835d0ffa4a5b107d3ac1422bf6bc71179a13d17dbd37040",
+      "native_symbol": "__ZN17IOSharedDataQueue16initWithCapacityEj",
+      "evidence": "Original and native __ZTV17IOSharedDataQueue have this method at slot 0x90 with matching authenticated-pointer key, address diversity and discriminator 42061. The table identity is present in the LTO-only map before this anchor is added. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b55a1e4",
+      "original_size": 36,
+      "original_sha256": "9bdee17cc648fb23edf1766101a36d4ded2746cd5b918c6ece6f798f63bb79ac",
+      "native_symbol": "_PE_parse_boot_arg_str",
+      "evidence": "Reorders (name, buffer, length), loads the boot command line at bootArgs+0x6c and tail-calls PE_parse_boot_argn_internal with allow_prefix=1. Matches pexpert/gen/bootargs.c PE_parse_boot_arg_str. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000af6dc88",
+      "original_size": 20,
+      "original_sha256": "6a28371ea3ec3c228feeb1c557116812b1d542111e6695b1e4dc3885f5bc5b73",
+      "native_symbol": "_throttle_lowpri_window",
+      "evidence": "Reads the current thread through TPIDR_EL1 and returns bit 0 of byte +0x741, the original uu_lowpri_window. Matches bsd/miscfs/specfs/spec_vnops.c throttle_lowpri_window. Also cross-checked with the retained import and RELEASE-LTO pairing; recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b55c3e8",
+      "original_size": 400,
+      "original_sha256": "588972dc20d14f7f6a39608807f7559fa46881b00926f9552a1b15b5719f3997",
+      "native_symbol": "_kprintf",
+      "evidence": "Corecrypto startup logging import at 0xfffffe00084ac948, reached by BL at 0xfffffe000ac7245c with the corecrypto_kext_start format string. Retained image resolves the same import to _kprintf; source interface is pexpert/arm/pe_kprintf.c kprintf(const char *, ...). Recovery provenance: prelink-recovery-2026-11-02."
+    },
+    {
+      "original": "0xfffffe000b4f4d64",
+      "original_size": 68,
+      "original_sha256": "733c3d1deeb6a84f14f002c6bc55029f14eadbd3c09935b3cf0bde76e4a06179",
+      "native_symbol": "_IOCircularDataQueueCopyLatest",
+      "evidence": "Same 68-byte instruction shape as the rebuilt LTO RELEASE symbol: null queue returns kIOReturnBadArgument (0xe00002c2); otherwise takes the address of the stack copy of data and calls _getLatestInQueueMemInternal with w3=1 (copy). Source IOCircularDataQueueImplementation.h copyLatestInQueueMem/IOCircularDataQueueCopyLatest; consumer IOFastPathHIDLEDService::timerCallback in IOHIDFamily calls this API and logs its name. Previously reference-order; rebuilding the adapter archives changed reference layout and dropped that inference."
+    },
+    {
+      "original": "0xfffffe000b221130",
+      "original_size": 16,
+      "original_sha256": "63f7baef323892990578a57f6f1fa48d54de1f990c7b9d95c9036bbd3fa539c5",
+      "native_symbol": "_get_aiotask",
+      "evidence": "BTI; MRS TPIDR_EL1; LDR x0,[x8,#0x708]; RET. The RELEASE reference _get_aiotask has the same thread-relative accessor with its source-layout offset 0x6b8. Source bsd/kern/kern_aio.c returns current_uthread()->uu_aio_task; IOMediaBSDClient.cpp DKR_GET_TASK calls get_aiotask then falls back to current_task. Previous verified mapping and retained IOStorageFamily import agree on this identity. Resolve the native accessor by symbol; do not copy the original thread offset."
     }
   ],
   "data": [
@@ -866,6 +1048,120 @@
       "native_symbol": "__ZN12IOUserClient9metaClassE",
       "addend": 0,
       "evidence": "Constant slot whose only pointer is IOUserClient::gMetaClass; AppleARMPlatform loads it through its GOT. Source: iokit/Kernel/IOUserClient.cpp."
+    },
+    {
+      "original": "0xfffffe000b890ff0",
+      "native_symbol": "_vnop_kqfilt_add_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_kqfilt_add; native _vnop_kqfilt_add_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b891030",
+      "native_symbol": "_vnop_kqfilt_remove_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_kqfilt_remove; native _vnop_kqfilt_remove_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b891070",
+      "native_symbol": "_vnop_monitor_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_monitor; native _vnop_monitor_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b8910b0",
+      "native_symbol": "_vnop_getnamedstream_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_getnamedstream; native _vnop_getnamedstream_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b8910f0",
+      "native_symbol": "_vnop_makenamedstream_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_makenamedstream; native _vnop_makenamedstream_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b891130",
+      "native_symbol": "_vnop_removenamedstream_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_removenamedstream; native _vnop_removenamedstream_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b8911b0",
+      "native_symbol": "_vnop_access_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_access; native _vnop_access_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b891228",
+      "native_symbol": "_vnop_create_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_create; native _vnop_create_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b891268",
+      "native_symbol": "_vnop_whiteout_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_whiteout; native _vnop_whiteout_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b8912a8",
+      "native_symbol": "_vnop_mknod_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_mknod; native _vnop_mknod_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b8912e8",
+      "native_symbol": "_vnop_setattr_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_setattr; native _vnop_setattr_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b891328",
+      "native_symbol": "_vnop_write_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_write; native _vnop_write_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe000b8917a8",
+      "native_symbol": "_vnop_setlabel_desc",
+      "addend": 0,
+      "evidence": "vnodeop_desc with vdesc_name at +8 pointing to the unique string vnop_setlabel; native _vnop_setlabel_desc has the same name and is defined in bsd/vfs/vnode_if.c. vfs_fsadd consumes the descriptor offset to index the operation vector. The 2026-11-02 device panic at vfs_fsadd+0x364 used the unresolved vnop_mknod descriptor as zone_array data and read offset 0xaaaaab. Other absent vnode descriptors are bound by the same explicit name identity."
+    },
+    {
+      "original": "0xfffffe0007ed04f0",
+      "native_symbol": "__ZN5IOCPU9metaClassE",
+      "addend": 0,
+      "evidence": "Constant slot pointing to IOCPU::gMetaClass at 0xfffffe000b929fb0, already identified by the reference data map. Native __ZN5IOCPU9metaClassE is likewise a single pointer to __ZN5IOCPU10gMetaClassE; this is the OSDefineMetaClass metaClass pointer, not the metaclass object itself. Checked against chained fixups on both inputs."
+    },
+    {
+      "original": "0xfffffe0007f07468",
+      "native_symbol": "__ZN9IOService9metaClassE",
+      "addend": 0,
+      "evidence": "Constant slot pointing to IOService::gMetaClass at 0xfffffe000b92b4d8, already identified by the reference data map. Native __ZN9IOService9metaClassE is likewise a single pointer to __ZN9IOService10gMetaClassE; this is the OSDefineMetaClass metaClass pointer, not the metaclass object itself. Checked against chained fixups on both inputs."
+    },
+    {
+      "original": "0xfffffe0007f07470",
+      "native_symbol": "__ZN8OSString9metaClassE",
+      "addend": 0,
+      "evidence": "Constant slot pointing to OSString::gMetaClass at 0xfffffe000b928b40, already identified by the reference data map. Native __ZN8OSString9metaClassE is likewise a single pointer to __ZN8OSString10gMetaClassE; this is the OSDefineMetaClass metaClass pointer, not the metaclass object itself. Checked against chained fixups on both inputs."
+    },
+    {
+      "original": "0xfffffe0007f07488",
+      "native_symbol": "__ZN7OSArray9metaClassE",
+      "addend": 0,
+      "evidence": "Constant slot pointing to OSArray::gMetaClass at 0xfffffe000b928830, already identified by the reference data map. Native __ZN7OSArray9metaClassE is likewise a single pointer to __ZN7OSArray10gMetaClassE; this is the OSDefineMetaClass metaClass pointer, not the metaclass object itself. Checked against chained fixups on both inputs."
+    },
+    {
+      "original": "0xfffffe000b9293b8",
+      "native_symbol": "_gIODTPHandleKey",
+      "addend": 0,
+      "evidence": "Loaded by IODTInterruptControllerName at 0xfffffe000b446858 as the getProperty key and assigned by IODeviceTreeAlloc. Source iokit/Kernel/IODeviceTreeSupport.cpp constructs it from AAPL,phandle and uses it to construct the interrupt controller name. Retained image maps all three selected import slots to _gIODTPHandleKey."
+    },
+    {
+      "original": "0xfffffe000b8bda38",
+      "native_symbol": "_audio_active",
+      "addend": 0,
+      "evidence": "32-bit global load at 0xfffffe000ad7c580 in PROC_CROSSED_HIGH_WATERMARK__SEND_EXC_RESOURCE_AND_SUSPEND, guarded by disable_exc_resource_during_audio and followed by the task_jetsam_realtime_audio bit test. Matches osfmk/kern/task.c resource-exception suppression. The selected sandbox pointer and retained image also identify _audio_active."
     }
   ],
   "sites": [
@@ -874,5 +1170,11 @@
       "native_symbol": "_unixnu_kernel_stack_shift",
       "evidence": "AppleMobileFileIntegrity's GOT slot for PAGE_SHIFT_CONST. Its only reader is the CoreEntitlements DER iterator's stack check (sp & ((1 << *slot) - 1) < 0x80 returns error 2), which assumes the stack base is aligned to 1 << shift, as on 16 KiB-page Apple kernels where the two lower guard pages are 32 KiB. On the native 4 KiB kernel the stack starts 8 KiB into a 32 KiB-aligned allocation, so the page shift (and 14) give false out-of-stack errors at fixed call depths (OSEntitlements copyDictionary failed with 14 on the exec path). Bound to unixnu_kernel_stack_shift, the allocation alignment shift (15), for which sp & mask stays at least 8 KiB inside any stack. The other ~70 components keep PAGE_SHIFT_CONST for page arithmetic."
     }
-  ]
+  ],
+  "prelink-recovery-2026-11-02": {
+    "reference_sha256": "483bce78f9c680807cd07dbe09d2acea9a7a5768bdfb844e8639b18c876495cb",
+    "matcher_signature": "b4a694e25f7fff1455b537be7931949a6ebb9e0ae5a575e022b49451cf545c0e",
+    "retained_kernel_sha256": "20edbd5e02781de877320fe2685ce2483c15ed1a986ca7a44000116cfc06e6dc",
+    "description": "23 imported function identities recovered from the previous qualified mapping and matching retained kernel pointers, plus the observed corecrypto kprintf import. Current native addresses are always resolved by symbol, never copied from the retained image."
+  }
 }

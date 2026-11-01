@@ -76,12 +76,15 @@ class Layout:
         self.cache, self.native = cache, native
         self.roots = {s['name']: dict(s) for s in cache.segments}
         self.occupied = []
+        self.retained_code = []
         for name, (_, offset) in cache.entries.items():
             if name == 'com.apple.kernel' or closure is not None and name not in closure:
                 continue
             for segment in Image(cache.data, offset).segments:
                 if segment['size'] and segment['name'] != '__LINKEDIT':
                     self.occupied.append((segment['va'], segment['va'] + segment['size']))
+                if segment['name'] == '__TEXT_EXEC' and segment['filesize']:
+                    self.retained_code.append((segment['va'], segment['va'] + segment['filesize'], name))
         self.placements = {}
         self.cursor = align(max(len(cache.data), max(s['va'] + s['size'] - cache.base
                                                   for s in cache.segments)))
@@ -214,6 +217,47 @@ class Layout:
     def describe(self):
         return {s['name']: {'old': hex(s['va']), 'new': hex(self.placements[s['name']]),
                             'size': hex(s['size'])} for s in self.native.segments}
+
+
+def relocate_original_stubs(data, layout):
+    """Retarget BTI/B adapters to fixed kext addresses after moving native text.
+
+    ld resolves B to an N_ABS symbol without emitting a split-segment record.
+    The board declares each target as <stub>.original at its collection address;
+    the branch displacement must be recomputed from the final native location.
+    """
+    from kc_image import signed
+    native = layout.native
+    names = {}
+    for address, symbols in native.symbols().items():
+        for name in symbols:
+            names.setdefault(name, set()).add(address)
+    result = []
+    for name, target in sorted(native.absolute_symbols().items()):
+        if not name.endswith('.original'):
+            continue
+        stubs = names.get(name[:-len('.original')], ())
+        if len(stubs) != 1:
+            raise ValueError(f'Absolute original target has no unique native stub: {name}')
+        stub = next(iter(stubs))
+        bti, branch = struct.unpack('<2I', native.read(stub, 8))
+        if bti != 0xd503245f or branch & 0xfc000000 != 0x14000000:
+            raise ValueError(f'Expected BTI/B original stub: {name}')
+        if stub + 4 + signed(branch & 0x3ffffff, 26) * 4 != target:
+            raise ValueError(f'Original stub disagrees with absolute symbol: {name}')
+        owners = [owner for begin, end, owner in layout.retained_code if begin <= target < end]
+        if len(owners) != 1:
+            raise ValueError(f'Original target is not retained executable code: {name} -> {target:#x}; '
+                             'rebuild adapters without native-slide compensation')
+        source = layout.translate(stub + 4)
+        displacement = target - source
+        if displacement % 4 or not -(1 << 27) <= displacement < 1 << 27:
+            raise ValueError(f'Original branch out of range: {name}')
+        struct.pack_into('<I', data, source - layout.cache.base,
+                         0x14000000 | ((displacement >> 2) & 0x3ffffff))
+        result.append(dict(symbol=name[:-len('.original')], source=hex(source),
+                           target=hex(target), owner=owners[0]))
+    return result
 
 
 def relocate_native(data, layout):
