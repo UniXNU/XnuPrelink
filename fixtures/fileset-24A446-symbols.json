@@ -1004,6 +1004,27 @@
       "original_sha256": "63f7baef323892990578a57f6f1fa48d54de1f990c7b9d95c9036bbd3fa539c5",
       "native_symbol": "_get_aiotask",
       "evidence": "BTI; MRS TPIDR_EL1; LDR x0,[x8,#0x708]; RET. The RELEASE reference _get_aiotask has the same thread-relative accessor with its source-layout offset 0x6b8. Source bsd/kern/kern_aio.c returns current_uthread()->uu_aio_task; IOMediaBSDClient.cpp DKR_GET_TASK calls get_aiotask then falls back to current_task. Previous verified mapping and retained IOStorageFamily import agree on this identity. Resolve the native accessor by symbol; do not copy the original thread offset."
+    },
+    {
+      "original": "0xfffffe000b430ab8",
+      "original_size": 284,
+      "original_sha256": "9f6253b1b5e80456121d9b3b8b17a6e1d688fb9168f4534f2385de9ce3ff26eb",
+      "native_symbol": "__ZN9IOService12Start_InvokeE5IORPCP15OSMetaClassBasePFiS2_PS_E",
+      "evidence": "Generated DriverKit invoke, adjacent to and before IOService::Stop_Invoke in IOService.iig.cpp order, followed by the already matched ClientCrashed_Invoke. Same IORPC reply checks (0xe00002bf) and the same handler PAC discriminator 0xe4fe as the native function. IOHIDFamily and IOStorageFamily call it. The matcher leaves it unbound because Start and Stop have identical shapes."
+    },
+    {
+      "original": "0xfffffe000b430bd4",
+      "original_size": 284,
+      "original_sha256": "59c06597b20d5b3fdc135bfcd9ef07ad1d190a3fdecf763d15908a108aab69c3",
+      "native_symbol": "__ZN9IOService11Stop_InvokeE5IORPCP15OSMetaClassBasePFiS2_PS_E",
+      "evidence": "IOHIDDevice::Dispatch reaches this stub on message id 0x98e715041c459fa5, which is IOService_Stop_ID in the native generated IOService.h, and signs the handler with discriminator 0xe4fe, which the native function authenticates. Hardware: panic 'called an unmapped kernel function' from IOHIDFamily during an AirPods output switch, sheng run 2026-11-05."
+    },
+    {
+      "original": "0xfffffe000b417540",
+      "original_size": 156,
+      "original_sha256": "c8922e3272ccfd4baeb44438a2656fd6302c0a13f10d335aea9a1dfff6f9d860",
+      "native_symbol": "__ZN11OSSerialize10setIndexedEb",
+      "evidence": "The only IOHIDFamily caller at 0xfffffe000a20624c calls OSSerialize::binaryWithCapacity(0x1000, 0, 0), then this with x0 = that serializer and w1 = 1. The body creates a 256-entry index object in the serializer, as native OSSerialize::setIndexed does for true. The object offset differs (0x50 original, 0x48 native); the serializer comes from the bound native constructor, so the native function uses its own layout."
     }
   ],
   "data": [
