@@ -71,10 +71,13 @@ def dependency_closure(cache, roots):
         return None
     _, metadata = prelink_info(cache)
     entries = {e['CFBundleIdentifier']: e for e in metadata['_PrelinkInfoDictionary']}
-    closure, pending = set(), list(roots)
+    # A root written !bundle.id leaves that dependency out, for a kext that only names it in a metaclass comparison: its
+    # OSDynamicCast finds nothing, and rebase_collection takes it off the retained kexts' library lists.
+    excluded = {root[1:] for root in roots if root.startswith('!')}
+    closure, pending = set(), [root for root in roots if not root.startswith('!')]
     while pending:
         identifier = pending.pop()
-        if identifier in closure:
+        if identifier in closure or identifier in excluded:
             continue
         if identifier not in entries:
             raise ValueError(f'Missing prelink dependency: {identifier}')
@@ -138,6 +141,9 @@ def rebase_collection(cache, base, closure=None, early_security_init=None, roots
             # A dependency is loaded for its code. Its drivers would match this board's device tree
             # (cpu, pmgr, platform expert) and start against hardware they were not written for.
             dropped_personalities.append(entry['CFBundleIdentifier'])
+        for root in roots or ():
+            if root.startswith('!') and root[1:] in (entry.get('OSBundleLibraries') or {}):
+                del entry['OSBundleLibraries'][root[1:]]
         entry.pop('_NativePrelinkEarlySecurityInit', None)
         if entry['CFBundleIdentifier'] in (early_security_init or {}):
             # native-security-init.patch: OSKext calls this original registration routine after start.
