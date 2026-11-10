@@ -688,7 +688,8 @@ def validate_map(raw, native_data, payload):
 def emit_images(raw, native_data, payload, roots, stub_symbol=None, early_security_init=None):
     inputs = validate_map(raw, native_data, payload)
     from fileset_match import MATCHER_VERSION, matcher_signature
-    if payload.get('matcher_version') != MATCHER_VERSION or payload.get('matcher_signature') != matcher_signature():
+    from fileset_names import expected_signature
+    if payload.get('matcher_version') != MATCHER_VERSION or payload.get('matcher_signature') != expected_signature(payload):
         raise ValueError('Pairing predates the current matching checks; rerun fileset_match.py')
     cache, native = Image(raw), Image(native_data)
     if cache.kind != 12 or native.kind != 2:

@@ -14,6 +14,7 @@ from bisect import bisect_right
 from collections import Counter, defaultdict
 import hashlib
 import json
+import struct
 from pathlib import Path
 
 from kc_image import Image
@@ -31,6 +32,12 @@ def names_signature():
     return digest.hexdigest()
 
 
+def expected_signature(payload):
+    """The signature a pairing must carry: this file's for a name map, the code matcher's otherwise."""
+    from fileset_match import matcher_signature
+    return names_signature() if payload.get('method') == METHOD else matcher_signature()
+
+
 def symbol_bearing(raw, entry_name='com.apple.kernel', minimum=4000):
     """True when the collection's kernel entry carries a full symbol table."""
     cache = Image(raw)
@@ -38,6 +45,30 @@ def symbol_bearing(raw, entry_name='com.apple.kernel', minimum=4000):
         return False
     entry = Image(raw, cache.entries[entry_name][1])
     return sum(len(names) for names in entry.symbols().values()) >= minimum
+
+
+def external_definitions(image):
+    """Name -> address of each section symbol defined once. An external definition wins over file-local
+    statics of the same name (the kernel has a static xts_encrypt beside the exported one); a name
+    defined more than once at the same level is left out."""
+    found = image.command(0x2)
+    by_name = {}
+    if not found:
+        return {}
+    symoff, count, stroff, _ = struct.unpack_from('<4I', image.data, found[0] + 8)
+    for index in range(count):
+        strx, kind, _, _, value = struct.unpack_from('<IBBHQ', image.data, symoff + 16 * index)
+        if kind & 0xe0 or kind & 0x0e != 0x0e:
+            continue
+        end = image.data.index(b'\0', stroff + strx)
+        name = image.data[stroff + strx:end].decode()
+        by_name.setdefault(name, {}).setdefault(bool(kind & 1), set()).add(value)
+    result = {}
+    for name, levels in by_name.items():
+        chosen = levels.get(True) or levels.get(False)
+        if len(chosen) == 1:
+            result[name] = next(iter(chosen))
+    return result
 
 
 def owner_of(cache, raw):
@@ -76,15 +107,11 @@ def match_by_names(raw, native_data, entry_name='com.apple.kernel'):
         if inside(fix[0]) and not inside(site):
             referrers[fix[0]].add(owner(site) or '?')
     original_names = original.symbols()
-    native_by_name = {}
-    for address, names in native.symbols().items():
-        for name in names:
-            native_by_name.setdefault(name, set()).add(address)
+    native_by_name = external_definitions(native)
     functions, data, missing, conflicts = {}, {}, {}, []
     for target in sorted(referrers):
         names = sorted(original_names.get(target, ()))
-        found = {native_by_name[name].__iter__().__next__() for name in names
-                 if name in native_by_name and len(native_by_name[name]) == 1}
+        found = {native_by_name[name] for name in names if name in native_by_name}
         if not names or not found:
             missing[f'{target:#x}'] = {'names': names, 'referrers': sorted(referrers[target])}
             continue
