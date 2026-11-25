@@ -672,7 +672,10 @@ def reviewed_sites(inputs, native, collection_slide):
                 raise ValueError('Reviewed site requires recorded evidence')
             if entry['native_symbol'] not in names:
                 raise ValueError(f'Reviewed site names a missing native symbol: {entry["native_symbol"]}')
-            sites[(int(entry['site'], 16) + collection_slide) & MASK64] = names[entry['native_symbol']]
+            addend = entry.get('addend', 0)
+            if not isinstance(addend, int) or isinstance(addend, bool):
+                raise ValueError('Reviewed site addend must be an integer')
+            sites[(int(entry['site'], 16) + collection_slide) & MASK64] = (names[entry['native_symbol']] + addend) & MASK64
     return sites
 
 
