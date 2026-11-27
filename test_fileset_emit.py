@@ -184,6 +184,27 @@ class FilesetEmitTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, 'current matching checks'):
                     emit_images(b'cache', b'native', payload, [])
 
+    def test_reviewed_sites_supports_integer_addend_and_pins_26c5035r_fairplay_slots(self):
+        from fileset_emit import reviewed_sites
+
+        class DummyNative:
+            def symbols(self):
+                return {
+                    0xfffffff007100000: ['_unixnu_kernel_stack_shift'],
+                    0xfffffff0071e1188: ['_ipc_kernel_map'],
+                    0xfffffff0071f2f38: ['_kernel_map'],
+                }
+
+        inputs = {
+            'kernelcache_sha256': 'd1003b5143ffd88439b4d45b6017f587171cfe6855660bed05370a2ea5db9fe9',
+            'entry': 'com.apple.kernel',
+        }
+        slide = 0x1f000000000
+        sites = reviewed_sites(inputs, DummyNative(), slide)
+        self.assertEqual(sites[0xfffffe00081d4630 + slide], 0xfffffff007100000)
+        self.assertEqual(sites[0xfffffe000846a860 + slide], 0xfffffff0071e1188 + 4)
+        self.assertEqual(sites[0xfffffe000846af20 + slide], 0xfffffff0071f2f38 + 4)
+
 
 if __name__ == '__main__':
     unittest.main()
